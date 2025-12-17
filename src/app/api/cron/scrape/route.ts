@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runPipeline } from "@/lib/automation/pipeline";
+import { runPipeline, reverifyExistingJobs } from "@/lib/automation/pipeline";
 
 // Vercel cron jobs use this secret to authenticate
 const CRON_SECRET = process.env.CRON_SECRET;
 
 // GET /api/cron/scrape
 //
-// Runs the job scraping and verification pipeline.
-// Should be called by Vercel cron or external scheduler.
-// Schedule: Every 6 hours (0 */6 * * *)
+// Runs the full job pipeline: scrape new jobs + re-verify existing jobs.
+// Combined into one endpoint for Vercel Hobby plan (1 cron limit).
+// Schedule: Daily at midnight UTC (0 0 * * *)
 export async function GET(request: NextRequest) {
   // Verify cron secret if configured
   if (CRON_SECRET) {
@@ -18,15 +18,22 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  console.log("Starting scheduled job scrape...");
+  console.log("Starting daily job pipeline...");
 
   try {
-    const result = await runPipeline();
+    // Step 1: Scrape and verify new jobs
+    console.log("Step 1: Scraping new jobs...");
+    const scrapeResult = await runPipeline();
+
+    // Step 2: Re-verify existing jobs
+    console.log("Step 2: Re-verifying existing jobs...");
+    const verifyResult = await reverifyExistingJobs();
 
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
-      result,
+      scrape: scrapeResult,
+      reverify: verifyResult,
     });
   } catch (error) {
     console.error("Pipeline error:", error);

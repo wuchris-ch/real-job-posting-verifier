@@ -84,9 +84,8 @@ Password: <app-password>
 - [ ] Test magic link login (if SMTP configured)
 - [ ] Test $1 payment flow end-to-end
 - [ ] Verify webhook updates user's `has_paid` status
-- [ ] Verify cron jobs are running (check Vercel dashboard > Crons)
-  - `/api/cron/scrape` runs every 6 hours
-  - `/api/cron/verify` runs every 12 hours
+- [ ] Verify cron job is running (check Vercel dashboard > Crons)
+  - `/api/cron/scrape` runs daily at midnight UTC (scrapes + re-verifies)
 - [ ] Test admin panel at `/admin`
 
 ### 6. Optional Enhancements

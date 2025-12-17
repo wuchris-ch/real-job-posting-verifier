@@ -2,11 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/scrape",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/cron/verify",
-      "schedule": "0 */12 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }

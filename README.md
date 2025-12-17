@@ -68,12 +68,13 @@ All methods create the same account tied to the user's email. Payment status is 
 
 ## Automation: Crons vs Admin Panel
 
-**In production (Vercel)**: Cron jobs run automatically on a schedule, configured in `vercel.json`:
+**In production (Vercel)**: One daily cron job handles everything, configured in `vercel.json`:
 
 | Cron | Schedule | What it does |
 |------|----------|--------------|
-| `/api/cron/scrape` | Every 6 hours | Scrape all 6 APIs, verify new jobs, add to database |
-| `/api/cron/verify` | Every 12 hours | Re-check existing jobs, mark broken ones |
+| `/api/cron/scrape` | Daily at midnight UTC | Scrape all 6 APIs, verify new jobs, re-verify existing jobs |
+
+Note: Combined into one cron for Vercel Hobby plan (1 cron limit). The `/api/cron/verify` endpoint still exists for manual triggers.
 
 **In development (localhost)**: Crons don't run automatically. Use the admin panel instead:
 
